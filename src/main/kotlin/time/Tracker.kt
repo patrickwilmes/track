@@ -1,11 +1,11 @@
 package time
 
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
+import Today
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.DayOfWeek
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -15,7 +15,10 @@ data class TimeEntry(
     val description: String,
     val start: LocalDateTime,
     val end: LocalDateTime,
-)
+    val day: LocalDateTime? = null,
+) {
+    val duration: Duration by lazy { Duration.between(start, end) }
+}
 
 object TimeEntryTable : Table(name = "time_entry") {
     val id = integer("id").autoIncrement()
@@ -28,6 +31,20 @@ object TimeEntryTable : Table(name = "time_entry") {
     override val primaryKey = PrimaryKey(id)
 }
 
+fun deleteAll() {
+    transaction {
+        TimeEntryTable.deleteAll()
+    }
+}
+
+fun updateTimeEntry(timeEntry: TimeEntry, newDuration: Duration) {
+    val newEndTime = timeEntry.start.plusSeconds(newDuration.seconds)
+    val newTimeEntry = timeEntry.copy(end = newEndTime)
+    transaction {
+        TimeEntryTable.update({ TimeEntryTable.id eq newTimeEntry.id!! }) { it[end] = newTimeEntry.end }
+    }
+}
+
 fun saveTimeEntry(timeEntry: TimeEntry, doRound: Boolean = false) {
     if (doRound) {
         // todo - do magic
@@ -38,15 +55,23 @@ fun saveTimeEntry(timeEntry: TimeEntry, doRound: Boolean = false) {
             it[description] = timeEntry.description
             it[start] = timeEntry.start
             it[end] = timeEntry.end
-            it[day] = LocalDate.now().atStartOfDay()
+            it[day] = Today.atStartOfDay()
         }
     }
 }
 
+fun deleteTimeEntryById(id: Int) {
+    transaction {
+        TimeEntryTable.deleteWhere { TimeEntryTable.id eq id }
+    }
+}
+
 fun getTimeEntriesForDay(date: LocalDate): List<TimeEntry> {
+    val start = date.with(DayOfWeek.MONDAY)
+    val end = date.with(DayOfWeek.FRIDAY)
     return transaction {
         TimeEntryTable
-            .select { TimeEntryTable.start.greaterEq(date.atStartOfDay()) and TimeEntryTable.end.lessEq(date.atStartOfDay().plusDays(1)) }
+            .select { TimeEntryTable.start.greaterEq(start.atStartOfDay()) and TimeEntryTable.end.lessEq(end.atStartOfDay().plusDays(1)) }
             .map {
                 TimeEntry(
                     id = it[TimeEntryTable.id],
@@ -54,6 +79,7 @@ fun getTimeEntriesForDay(date: LocalDate): List<TimeEntry> {
                     description = it[TimeEntryTable.description],
                     start = it[TimeEntryTable.start],
                     end = it[TimeEntryTable.end],
+                    day = it[TimeEntryTable.day]
                 )
             }
     }

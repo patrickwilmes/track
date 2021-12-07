@@ -1,5 +1,6 @@
 package ui
 
+import Today
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -15,7 +16,6 @@ import time.saveTimeEntry
 import ui.components.SpacedElements
 import ui.components.SpacedTextField
 import java.time.Duration
-import java.time.LocalDate
 
 @Composable
 fun TimeTrackingControls(
@@ -122,7 +122,7 @@ private fun handleTimerStopAction(
         ), doRound = true
     )
     setTextFieldsReadonly(false)
-    setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
+    setTimeEntries(getTimeEntriesForDay(Today))
     setDescription("")
     setProjectName("")
     setTime(Duration.ZERO)
