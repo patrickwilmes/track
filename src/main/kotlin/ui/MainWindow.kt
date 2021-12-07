@@ -19,17 +19,16 @@ import ui.components.Separator
 import ui.components.TimeLabel
 import java.time.Duration
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Composable
 fun App() {
     DesktopMaterialTheme {
         val timer = remember { Timer() }
-        val time = remember { mutableStateOf(Duration.ofMillis(0)) }
+        val (time, setTime) = remember { mutableStateOf(Duration.ofMillis(0)) }
         val stateVertical = rememberScrollState(0)
         val (timeEntries, setTimeEntries) = remember { mutableStateOf(getTimeEntriesForDay(LocalDate.now())) }
         Column {
-            TimeTrackingBox(timer, time.value.seconds, setTimeEntries)
+            TimeTrackingBox(timer, time.seconds, setTimeEntries, setTime)
             Separator()
             Row {
                 Column(
@@ -52,7 +51,7 @@ fun App() {
                 while (true) {
                     withFrameMillis {
                         if (timer.isRunning)
-                            time.value = timer.tick()
+                            setTime(timer.tick())
                     }
                 }
             }
@@ -64,10 +63,11 @@ fun App() {
 private fun TimeTrackingBox(
     timer: Timer,
     timeInSeconds: Long,
-    setTimeEntries: (List<TimeEntry>) -> Unit
+    setTimeEntries: (List<TimeEntry>) -> Unit,
+    setTime: (Duration) -> Unit
 ) {
     Row(modifier = Modifier.padding(10.dp)) {
-        TimeTrackingControls(timer, setTimeEntries)
+        TimeTrackingControls(timer, setTimeEntries, setTime)
         Column {
             Box(modifier = Modifier.padding(start = 10.dp, top = 8.dp)) {
                 TimeLabel(
