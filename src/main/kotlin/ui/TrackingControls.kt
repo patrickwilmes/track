@@ -14,12 +14,14 @@ import time.getTimeEntriesForDay
 import time.saveTimeEntry
 import ui.components.SpacedElements
 import ui.components.SpacedTextField
+import java.time.Duration
 import java.time.LocalDate
 
 @Composable
 fun TimeTrackingControls(
     timer: Timer,
-    setTimeEntries: (List<TimeEntry>) -> Unit
+    setTimeEntries: (List<TimeEntry>) -> Unit,
+    setTime: (Duration) -> Unit
 ) {
     val (description, setDescription) = remember { mutableStateOf("") }
     val (projectName, setProjectName) = remember { mutableStateOf("") }
@@ -52,21 +54,16 @@ fun TimeTrackingControls(
                     Button(
                         onClick = {
                             startStopButtonLabel.value = if (timer.isRunning) {
-                                timer.stop()
-                                setTextFieldsReadonly(false)
-                                stopAndRoundButtonEnabled.value = false
-                                saveTimeEntry(
-                                    TimeEntry(
-                                        projectName = projectName,
-                                        description = description,
-                                        start = timer.startTime!!,
-                                        end = timer.endTime!!
-                                    )
+                                handleTimerStopAction(
+                                    timer,
+                                    projectName,
+                                    description,
+                                    setTextFieldsReadonly,
+                                    setTimeEntries,
+                                    setDescription,
+                                    setProjectName,
+                                    setTime,
                                 )
-                                setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
-                                setDescription("")
-                                setProjectName("")
-                                timer.reset()
                                 "Start"
                             } else {
                                 setTextFieldsReadonly(true)
@@ -84,20 +81,16 @@ fun TimeTrackingControls(
                     enabled = stopAndRoundButtonEnabled.value,
                     onClick = {
                         if (timer.isRunning) {
-                            timer.stop()
-                            saveTimeEntry(
-                                TimeEntry(
-                                    projectName = projectName,
-                                    description = description,
-                                    start = timer.startTime!!,
-                                    end = timer.endTime!!
-                                ), doRound = true
+                            handleTimerStopAction(
+                                timer,
+                                projectName,
+                                description,
+                                setTextFieldsReadonly,
+                                setTimeEntries,
+                                setDescription,
+                                setProjectName,
+                                setTime,
                             )
-                            setTextFieldsReadonly(false)
-                            setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
-                            setDescription("")
-                            setProjectName("")
-                            timer.reset()
                         }
                     },
                     modifier = Modifier.width(200.dp),
@@ -107,4 +100,31 @@ fun TimeTrackingControls(
             }
         }
     }
+}
+
+private fun handleTimerStopAction(
+    timer: Timer,
+    projectName: String,
+    description: String,
+    setTextFieldsReadonly: (Boolean) -> Unit,
+    setTimeEntries: (List<TimeEntry>) -> Unit,
+    setDescription: (String) -> Unit,
+    setProjectName: (String) -> Unit,
+    setTime: (Duration) -> Unit,
+) {
+    timer.stop()
+    saveTimeEntry(
+        TimeEntry(
+            projectName = projectName,
+            description = description,
+            start = timer.startTime!!,
+            end = timer.endTime!!
+        ), doRound = true
+    )
+    setTextFieldsReadonly(false)
+    setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
+    setDescription("")
+    setProjectName("")
+    setTime(Duration.ZERO)
+    timer.reset()
 }
