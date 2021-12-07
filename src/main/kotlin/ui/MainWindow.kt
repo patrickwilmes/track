@@ -66,12 +66,8 @@ private fun TimeTrackingBox(
     timeInSeconds: Long,
     setTimeEntries: (List<TimeEntry>) -> Unit
 ) {
-    val (startTime, setStartTime) = remember { mutableStateOf(LocalDateTime.now()) }
-    val (endTime, setEndTime) = remember { mutableStateOf(LocalDateTime.now()) }
-    val (shouldDisplayStartEnd, setShouldDisplayStartEnd) = remember { mutableStateOf(false) }
-
     Row(modifier = Modifier.padding(10.dp)) {
-        TimeTrackingControls(timer, setStartTime, setEndTime, setShouldDisplayStartEnd, setTimeEntries)
+        TimeTrackingControls(timer, setTimeEntries)
         Column {
             Box(modifier = Modifier.padding(start = 10.dp, top = 8.dp)) {
                 TimeLabel(
@@ -80,19 +76,6 @@ private fun TimeTrackingBox(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.height(DefaultComponentHeight.dp)
                 )
-            }
-            Row(modifier = Modifier.padding(start = 10.dp, top = 3.dp)) {
-                if (shouldDisplayStartEnd) {
-                    Text(
-                        "Start: ${startTime.asFormattedString()}",
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        "End: ${endTime.asFormattedString()}",
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 2.dp)
-                    )
-                }
             }
         }
     }

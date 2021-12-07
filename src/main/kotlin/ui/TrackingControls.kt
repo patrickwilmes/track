@@ -15,27 +15,21 @@ import time.saveTimeEntry
 import ui.components.SpacedElements
 import ui.components.SpacedTextField
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Composable
 fun TimeTrackingControls(
     timer: Timer,
-    setStartTime: (LocalDateTime) -> Unit,
-    setEndTime: (LocalDateTime) -> Unit,
-    setShouldDisplayStartEnd: (Boolean) -> Unit,
     setTimeEntries: (List<TimeEntry>) -> Unit
 ) {
     val (description, setDescription) = remember { mutableStateOf("") }
     val (projectName, setProjectName) = remember { mutableStateOf("") }
-    val (ticketNumber, setTicketNumber) = remember { mutableStateOf("") }
     val startStopButtonLabel = remember { mutableStateOf("Start") }
     val stopAndRoundButtonEnabled = remember { mutableStateOf(false) }
     Column {
         Row {
             Column {
                 SpacedTextField(description, "Description", 450, setDescription)
-                SpacedTextField(projectName, "Project Name",450, setProjectName)
-                SpacedTextField(ticketNumber,"Ticket Number", 450, setTicketNumber)
+                SpacedTextField(projectName, "Project Name", 450, setProjectName)
             }
         }
         Row {
@@ -45,16 +39,21 @@ fun TimeTrackingControls(
                         onClick = {
                             startStopButtonLabel.value = if (timer.isRunning) {
                                 timer.stop()
-                                setShouldDisplayStartEnd(true)
-                                setStartTime(timer.startTime!!)
-                                setEndTime(timer.endTime!!)
                                 stopAndRoundButtonEnabled.value = false
-                                saveTimeEntry(TimeEntry(projectName = projectName, description = description, start = timer.startTime!!, end = timer.endTime!!))
+                                saveTimeEntry(
+                                    TimeEntry(
+                                        projectName = projectName,
+                                        description = description,
+                                        start = timer.startTime!!,
+                                        end = timer.endTime!!
+                                    )
+                                )
                                 setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
+                                setDescription("")
+                                setProjectName("")
                                 timer.reset()
                                 "Start"
                             } else {
-                                setShouldDisplayStartEnd(true)
                                 timer.start()
                                 stopAndRoundButtonEnabled.value = true
                                 "Stop"
@@ -70,11 +69,17 @@ fun TimeTrackingControls(
                     onClick = {
                         if (timer.isRunning) {
                             timer.stop()
-                            setShouldDisplayStartEnd(true)
-                            setStartTime(timer.startTime!!)
-                            setEndTime(timer.endTime!!)
-                            saveTimeEntry(TimeEntry(projectName = projectName, description = description, start = timer.startTime!!, end = timer.endTime!!), doRound = true)
+                            saveTimeEntry(
+                                TimeEntry(
+                                    projectName = projectName,
+                                    description = description,
+                                    start = timer.startTime!!,
+                                    end = timer.endTime!!
+                                ), doRound = true
+                            )
                             setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
+                            setDescription("")
+                            setProjectName("")
                             timer.reset()
                         }
                     },
@@ -83,15 +88,6 @@ fun TimeTrackingControls(
                     Text("Stop (round)")
                 }
             }
-            Button(onClick = {
-                timer.stop()
-                timer.reset()
-                setShouldDisplayStartEnd(false)
-                setDescription("")
-                setProjectName("")
-                setTicketNumber("")
-            }) { Text("Reset") }
         }
-
     }
 }
