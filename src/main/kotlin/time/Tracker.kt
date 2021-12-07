@@ -8,6 +8,7 @@ import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 data class TimeEntry(
     val id: Int? = null,
@@ -46,15 +47,29 @@ fun updateTimeEntry(timeEntry: TimeEntry, newDuration: Duration) {
 }
 
 fun saveTimeEntry(timeEntry: TimeEntry, doRound: Boolean = false) {
-    if (doRound) {
-        // todo - do magic
-    }
+    val entryToSave = if (doRound) {
+        val duration = Duration.between(timeEntry.start, timeEntry.end).abs()
+        val trunc = duration.truncatedTo(ChronoUnit.HOURS)
+        val diff = duration - trunc
+        val final = if (diff.seconds < 15 * 60) {
+            trunc.plusMinutes(15)
+        } else if (diff.seconds > 15 * 60 && diff.seconds < 30 * 60) {
+            trunc.plusMinutes(30)
+        } else if (diff.seconds > 30 * 60 && diff.seconds < 45 * 60) {
+            trunc.plusMinutes(45)
+        } else if (diff.seconds > 45 * 60) {
+            trunc.plusHours(1)
+        } else {
+            duration
+        }
+        timeEntry.copy(end = timeEntry.start.plusSeconds(final.seconds))
+    } else timeEntry
     transaction {
         TimeEntryTable.insert {
-            it[projectName] = timeEntry.projectName
-            it[description] = timeEntry.description
-            it[start] = timeEntry.start
-            it[end] = timeEntry.end
+            it[projectName] = entryToSave.projectName
+            it[description] = entryToSave.description
+            it[start] = entryToSave.start
+            it[end] = entryToSave.end
             it[day] = Today.atStartOfDay()
         }
     }
