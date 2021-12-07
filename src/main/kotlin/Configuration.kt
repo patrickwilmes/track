@@ -1,3 +1,4 @@
+import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -8,15 +9,12 @@ import java.sql.Connection
 private val tables = setOf(TimeEntryTable)
 
 fun setupDatabase(rebuildDatabase: Boolean = false) {
+    val datasource = "jdbc:sqlite:data.db"
     // todo - db should be placed in AppData or equal in production and in the wd in dev mode
-    Database.connect("jdbc:sqlite:data.db", "org.sqlite.JDBC")
+    Database.connect(datasource, "org.sqlite.JDBC")
     TransactionManager.manager.defaultIsolationLevel =
         Connection.TRANSACTION_SERIALIZABLE
 
-    transaction {
-        if (rebuildDatabase) {
-            tables.forEach { SchemaUtils.drop(it) }
-        }
-        tables.forEach { SchemaUtils.create(it) }
-    }
+    val flyway = Flyway.configure().dataSource(datasource, null, null).load()
+    flyway.migrate()
 }
