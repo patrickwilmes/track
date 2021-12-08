@@ -26,7 +26,6 @@ fun TimeTrackingControls(
     val (description, setDescription) = remember { mutableStateOf("") }
     val (projectName, setProjectName) = remember { mutableStateOf("") }
     val startStopButtonLabel = remember { mutableStateOf("Start") }
-    val stopAndRoundButtonEnabled = remember { mutableStateOf(false) }
     val (textFieldsReadonly, setTextFieldsReadonly) = remember { mutableStateOf(false) }
 
     Column {
@@ -63,12 +62,12 @@ fun TimeTrackingControls(
                                     setDescription,
                                     setProjectName,
                                     setTime,
+                                    false,
                                 )
                                 "Start"
                             } else {
                                 setTextFieldsReadonly(true)
                                 timer.start()
-                                stopAndRoundButtonEnabled.value = true
                                 "Stop"
                             }
                         },
@@ -78,7 +77,7 @@ fun TimeTrackingControls(
                     }
                 }
                 Button(
-                    enabled = stopAndRoundButtonEnabled.value,
+                    enabled = timer.isRunning,
                     onClick = {
                         if (timer.isRunning) {
                             handleTimerStopAction(
@@ -90,6 +89,7 @@ fun TimeTrackingControls(
                                 setDescription,
                                 setProjectName,
                                 setTime,
+                                true
                             )
                         }
                     },
@@ -111,6 +111,7 @@ private fun handleTimerStopAction(
     setDescription: (String) -> Unit,
     setProjectName: (String) -> Unit,
     setTime: (Duration) -> Unit,
+    doRound: Boolean,
 ) {
     timer.stop()
     saveTimeEntry(
@@ -119,7 +120,8 @@ private fun handleTimerStopAction(
             description = description,
             start = timer.startTime!!,
             end = timer.endTime!!
-        ), doRound = true
+        ),
+        doRound = doRound,
     )
     setTextFieldsReadonly(false)
     setTimeEntries(getTimeEntriesForDay(Today))
