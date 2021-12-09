@@ -1,22 +1,26 @@
 package ui
 
-import Today
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.unit.dp
-import time.TimeEntry
-import time.Timer
-import time.getTimeEntriesForDay
-import time.saveTimeEntry
+import time.*
 import ui.components.SpacedElements
 import ui.components.SpacedTextField
 import java.time.Duration
+import java.time.LocalDate
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TimeTrackingControls(
     timer: Timer,
@@ -27,6 +31,8 @@ fun TimeTrackingControls(
     val (projectName, setProjectName) = remember { mutableStateOf("") }
     val startStopButtonLabel = remember { mutableStateOf("Start") }
     val (textFieldsReadonly, setTextFieldsReadonly) = remember { mutableStateOf(false) }
+    val (projectNameSuggestions, setProjectNameSuggestions) = remember { mutableStateOf(emptyList<String>()) }
+    val (selectedSuggestionIndex, setSelectedSuggestionIndex) = remember { mutableStateOf(0) }
 
     Column {
         Row {
@@ -43,8 +49,51 @@ fun TimeTrackingControls(
                     label = "Project Name",
                     maxWidth = 450,
                     isReadonly = textFieldsReadonly,
-                    setValue = setProjectName
+                    setValue = setProjectName,
+                    onValueChange = {
+                        setProjectNameSuggestions(getProjectNamesStartingWith(it))
+                    },
+                    onKeyEvent = {
+                        if (it.key == Key.DirectionDown) {
+                            if (selectedSuggestionIndex < projectNameSuggestions.size - 1) {
+                                setSelectedSuggestionIndex(selectedSuggestionIndex+1)
+                            } else {
+                                setSelectedSuggestionIndex(0)
+                            }
+                        } else if (it.key == Key.DirectionUp) {
+                            if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < projectNameSuggestions.size - 1) {
+                                setSelectedSuggestionIndex(selectedSuggestionIndex-1)
+                            } else {
+                                setSelectedSuggestionIndex(0)
+                            }
+                        }
+                        if (it.key == Key.Enter) {
+                            setProjectName(projectNameSuggestions[selectedSuggestionIndex])
+                        }
+                        false
+                    }
                 )
+                if (projectNameSuggestions.isNotEmpty()) {
+                    val baseModifier = Modifier.padding(start = 4.dp)
+                    Box {
+                        Column {
+                            projectNameSuggestions.forEachIndexed { index, elem ->
+                                if (index == selectedSuggestionIndex) {
+                                    Text(
+                                        text = elem,
+                                        modifier = baseModifier.clickable { setProjectName(elem) }
+                                            .background(color = Color.LightGray)
+                                    )
+                                } else {
+                                    Text(
+                                        text = elem,
+                                        modifier = baseModifier.clickable { setProjectName(elem) }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         Row {
@@ -124,7 +173,7 @@ private fun handleTimerStopAction(
         doRound = doRound,
     )
     setTextFieldsReadonly(false)
-    setTimeEntries(getTimeEntriesForDay(Today))
+    setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
     setDescription("")
     setProjectName("")
     setTime(Duration.ZERO)

@@ -1,6 +1,5 @@
 package time
 
-import Today
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -32,9 +31,14 @@ object TimeEntryTable : Table(name = "time_entry") {
     override val primaryKey = PrimaryKey(id)
 }
 
-fun deleteAll() {
-    transaction {
-        TimeEntryTable.deleteAll()
+fun getProjectNamesStartingWith(leading: String): List<String> {
+    if (leading.isBlank())
+        return emptyList()
+    return transaction {
+        TimeEntryTable.select { TimeEntryTable.projectName.like("$leading%") }
+            .map {
+                it[TimeEntryTable.projectName]
+            }
     }
 }
 
@@ -42,7 +46,9 @@ fun updateTimeEntry(timeEntry: TimeEntry, newDuration: Duration) {
     val newEndTime = timeEntry.start.plusSeconds(newDuration.seconds)
     val newTimeEntry = timeEntry.copy(end = newEndTime)
     transaction {
-        TimeEntryTable.update({ TimeEntryTable.id eq newTimeEntry.id!! }) { it[end] = newTimeEntry.end }
+        TimeEntryTable.update({ TimeEntryTable.id eq newTimeEntry.id!! }) {
+            it[end] = newTimeEntry.end
+        }
     }
 }
 
@@ -70,7 +76,7 @@ fun saveTimeEntry(timeEntry: TimeEntry, doRound: Boolean = false) {
             it[description] = entryToSave.description
             it[start] = entryToSave.start
             it[end] = entryToSave.end
-            it[day] = Today.atStartOfDay()
+            it[day] = LocalDate.now().atStartOfDay()
         }
     }
 }
@@ -86,7 +92,11 @@ fun getTimeEntriesForDay(date: LocalDate): List<TimeEntry> {
     val end = date.with(DayOfWeek.FRIDAY)
     return transaction {
         TimeEntryTable
-            .select { TimeEntryTable.start.greaterEq(start.atStartOfDay()) and TimeEntryTable.end.lessEq(end.atStartOfDay().plusDays(1)) }
+            .select {
+                TimeEntryTable.start.greaterEq(start.atStartOfDay()) and TimeEntryTable.end.lessEq(
+                    end.atStartOfDay().plusDays(1)
+                )
+            }
             .map {
                 TimeEntry(
                     id = it[TimeEntryTable.id],

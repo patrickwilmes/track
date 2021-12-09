@@ -2,7 +2,6 @@ import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.sql.Connection
-import java.time.LocalDate
 
 fun setupDatabase() {
     val databaseName = if (AppMode == Mode.Dev)
@@ -20,7 +19,7 @@ fun setupDatabase() {
     flyway.migrate()
 }
 
-var Today = LocalDate.now()
+//var Today = LocalDate.now()
 
 enum class Mode {
     Dev, Prod
