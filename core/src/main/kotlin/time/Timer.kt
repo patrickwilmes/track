@@ -20,7 +20,7 @@ class Timer {
     }
 
     fun tick(): Duration {
-        val delta = System.currentTimeMillis() - startMillis!!;
+        val delta = System.currentTimeMillis() - startMillis!!
         return Duration.ofMillis(delta)
     }
 

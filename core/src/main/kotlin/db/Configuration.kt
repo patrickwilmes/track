@@ -1,7 +1,15 @@
+package db
+
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.sql.Connection
+
+enum class Mode {
+    Dev, Prod
+}
+
+var AppMode = Mode.Prod
 
 fun setupDatabase() {
     val databaseName = if (AppMode == Mode.Dev)
@@ -18,11 +26,3 @@ fun setupDatabase() {
     val flyway = Flyway.configure().dataSource(datasource, null, null).load()
     flyway.migrate()
 }
-
-//var Today = LocalDate.now()
-
-enum class Mode {
-    Dev, Prod
-}
-
-var AppMode = Mode.Prod
