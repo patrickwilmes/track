@@ -14,7 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.unit.dp
-import time.*
+import project.Day
+import project.getAllProjectsFor
+import time.TimeEntry
+import time.Timer
+import time.getProjectNamesStartingWith
+import time.saveTimeEntry
 import ui.components.SpacedElements
 import ui.components.SpacedTextField
 import java.time.Duration
@@ -24,7 +29,7 @@ import java.time.LocalDate
 @Composable
 fun TimeTrackingControls(
     timer: Timer,
-    setTimeEntries: (List<TimeEntry>) -> Unit,
+    setTimeEntries: (List<Day>) -> Unit,
     setTime: (Duration) -> Unit
 ) {
     val (description, setDescription) = remember { mutableStateOf("") }
@@ -156,7 +161,7 @@ private fun handleTimerStopAction(
     projectName: String,
     description: String,
     setTextFieldsReadonly: (Boolean) -> Unit,
-    setTimeEntries: (List<TimeEntry>) -> Unit,
+    setTimeEntries: (List<Day>) -> Unit,
     setDescription: (String) -> Unit,
     setProjectName: (String) -> Unit,
     setTime: (Duration) -> Unit,
@@ -173,7 +178,7 @@ private fun handleTimerStopAction(
         doRound = doRound,
     )
     setTextFieldsReadonly(false)
-    setTimeEntries(getTimeEntriesForDay(LocalDate.now()))
+    setTimeEntries(getAllProjectsFor(LocalDate.now()))
     setDescription("")
     setProjectName("")
     setTime(Duration.ZERO)
