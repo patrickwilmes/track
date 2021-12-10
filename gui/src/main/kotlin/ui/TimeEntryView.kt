@@ -22,7 +22,6 @@ import project.Project
 import project.getAllProjectsFor
 import time.*
 import ui.components.Separator
-import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -38,12 +37,11 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
     Row(
         modifier = Modifier.padding(10.dp).fillMaxWidth()
     ) {
-        val startOfWeek = workingDay.with(DayOfWeek.MONDAY)
-        val endOfWeek = workingDay.with(DayOfWeek.FRIDAY)
+        val week = getWeekForDate(workingDay)
         val onClick = { e: Direction ->
             val date = when (e) {
-                Direction.Left -> startOfWeek.minusWeeks(1).with(DayOfWeek.MONDAY)
-                Direction.Right -> startOfWeek.plusWeeks(1).with(DayOfWeek.MONDAY)
+                Direction.Left -> getMondayOfPreviousWeek(week.getStartDay())
+                Direction.Right -> getMondayOfNextWeek(week.getStartDay())
             }
             setWorkingDay(date)
             setTimeEntries(getAllProjectsFor(date))
@@ -56,13 +54,13 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
             })
 
         // todo - this should be centered
-        val textModifier = if (LocalDate.now().isBefore(endOfWeek) && LocalDate.now().isAfter(startOfWeek))
+        val textModifier = if (LocalDate.now().isBefore(week.getEndDay()) && LocalDate.now().isAfter(week.getStartDay()))
             Modifier.padding(start = 5.dp, end = 5.dp).background(color = Color(0xFFA8C0CE)).fillMaxWidth(0.9f)
         else
             Modifier.padding(start = 5.dp, end = 5.dp).fillMaxWidth(0.9f)
         Text(
-            "${startOfWeek.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))} - ${
-                endOfWeek.format(
+            "${week.getStartDay().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))} - ${
+                week.getEndDay().format(
                     DateTimeFormatter.ofPattern("dd.MM.yyyy")
                 )
             }",
@@ -176,6 +174,7 @@ private fun TimeEntryItem(
     }
     Row(modifier = Modifier.padding(top = 5.dp)) {
         Button(onClick = {
+            // todo - this should be done in the backend
             val parts = durationText.split(":")
             val hours = parts[0].toLong()
             val minutes = parts[1].toLong()
