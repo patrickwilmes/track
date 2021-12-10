@@ -15,11 +15,10 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.unit.dp
 import project.Day
-import project.getAllProjectsFor
 import time.TimeEntry
 import time.Timer
 import time.getProjectNamesStartingWith
-import time.saveTimeEntry
+import tracker.TrackingDataService
 import ui.components.SpacedElements
 import ui.components.SpacedTextField
 import java.time.Duration
@@ -168,7 +167,7 @@ private fun handleTimerStopAction(
     doRound: Boolean,
 ) {
     timer.stop()
-    saveTimeEntry(
+    TrackingDataService.saveTimeEntry(
         TimeEntry(
             projectName = projectName,
             description = description,
@@ -178,7 +177,7 @@ private fun handleTimerStopAction(
         doRound = doRound,
     )
     setTextFieldsReadonly(false)
-    setTimeEntries(getAllProjectsFor(LocalDate.now()))
+    setTimeEntries(TrackingDataService.getAllProjectsFor(LocalDate.now()))
     setDescription("")
     setProjectName("")
     setTime(Duration.ZERO)

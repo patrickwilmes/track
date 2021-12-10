@@ -38,6 +38,7 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "track-dev"
             packageVersion = project.version.toString()
+            modules("java.instrument", "java.sql", "jdk.unsupported")
         }
     }
 }

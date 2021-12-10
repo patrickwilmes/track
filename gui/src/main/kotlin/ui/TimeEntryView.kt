@@ -21,6 +21,7 @@ import project.Day
 import project.Project
 import project.getAllProjectsFor
 import time.*
+import tracker.TrackingDataService
 import ui.components.Separator
 import java.time.Duration
 import java.time.LocalDate
@@ -44,7 +45,7 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
                 Direction.Right -> getMondayOfNextWeek(week.getStartDay())
             }
             setWorkingDay(date)
-            setTimeEntries(getAllProjectsFor(date))
+            setTimeEntries(TrackingDataService.getAllProjectsFor(date))
         }
         Icon(
             Icons.Default.ArrowBack,
@@ -181,15 +182,15 @@ private fun TimeEntryItem(
             val seconds = parts[2].toLong()
             val timeInSeconds = seconds + (minutes * 60) + (hours * 60 * 60)
             setDurationText(timeInSeconds.secondsToFormattedString())
-            updateTimeEntry(timeEntry, Duration.ofSeconds(timeInSeconds))
+            TrackingDataService.updateTimeEntry(timeEntry, Duration.ofSeconds(timeInSeconds))
             setTimeEntries(getAllProjectsFor(currentWorkingDay))
         }) {
             Text("Update")
         }
         Button(
             onClick = {
-                deleteTimeEntryById(timeEntry.id!!)
-                setTimeEntries(getAllProjectsFor(currentWorkingDay))
+                TrackingDataService.deleteTimeEntryById(timeEntry.id!!)
+                setTimeEntries(TrackingDataService.getAllProjectsFor(currentWorkingDay))
             },
             modifier = Modifier.padding(start = 4.dp)
         ) {
