@@ -64,13 +64,28 @@ fun App() {
                                         Switch(
                                             checked = settings.value.trackTimeOnWeekend,
                                             onCheckedChange = {
-                                                settings.value = settings.value.copy(trackTimeOnWeekend = it)
+                                                settings.value =
+                                                    settings.value.copy(trackTimeOnWeekend = it)
                                                 setDirty()
                                             })
                                     }
+                                    Row(modifier = Modifier.padding(top = 4.dp)) {
+                                        Column {
+                                            Text("Hours per week")
+                                            TextField(
+                                                value = settings.value.hoursPerWeek.toString(),
+                                                singleLine = true,
+                                                onValueChange = {
+                                                    settings.value =
+                                                        settings.value.copy(hoursPerWeek = it.toInt()) // todo - make all that parsing in some kind of view model
+                                                    setDirty()
+                                                })
+                                        }
+                                    }
+
                                 }
                             }
-                            Spacer(modifier = Modifier.fillMaxHeight(0.8f))
+                            Spacer(modifier = Modifier.fillMaxHeight(0.7f))
                             Row {
                                 Button(
                                     onClick = {
