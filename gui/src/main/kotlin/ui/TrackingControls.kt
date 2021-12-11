@@ -55,7 +55,7 @@ fun TimeTrackingControls(
                     isReadonly = textFieldsReadonly,
                     setValue = setProjectName,
                     onValueChange = {
-                        setProjectNameSuggestions(getProjectNamesStartingWith(it))
+                        setProjectNameSuggestions(TrackingDataService.getProjectNamesStartingWith(it))
                     },
                     onKeyEvent = {
                         if (it.key == Key.DirectionDown) {

@@ -9,3 +9,4 @@ pluginManagement {
 rootProject.name = "track"
 include("gui")
 include("core")
+include("server")
