@@ -20,7 +20,9 @@ jobs:
           java-version: 11
           distribution: adopt
       - name: Build
-        run: ./gradlew clean build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
 
         
       
