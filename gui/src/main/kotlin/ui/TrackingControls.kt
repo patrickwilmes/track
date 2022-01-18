@@ -144,6 +144,7 @@ fun TimeTrackingControls(
                                 setTime,
                                 true
                             )
+                            startStopButtonLabel.value = "Start"
                         }
                     },
                     modifier = Modifier.width(200.dp),
