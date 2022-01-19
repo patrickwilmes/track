@@ -35,6 +35,8 @@ fun updateTimeEntry(timeEntry: TimeEntry, newDuration: Duration) {
     val newTimeEntry = timeEntry.copy(end = newEndTime)
     transaction {
         TimeEntryTable.update({ TimeEntryTable.id eq newTimeEntry.id!! }) {
+            it[projectName] = newTimeEntry.projectName
+            it[description] = newTimeEntry.description
             it[end] = newTimeEntry.end
         }
     }

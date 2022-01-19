@@ -149,13 +149,28 @@ private fun TimeEntryItem(
 ) {
     val padding = Modifier.padding(top = 7.dp, end = 5.dp)
     val (durationText, setDurationText) = remember { mutableStateOf(timeEntry.duration.seconds.secondsToFormattedString()) }
+    val (projectNameText, setProjectNameText) = remember { mutableStateOf(timeEntry.projectName) }
+    val (descriptionText, setDescriptionText) = remember { mutableStateOf(timeEntry.description) }
     Row(modifier = Modifier.padding(top = 4.dp)) {
         Column(modifier = Modifier.fillMaxWidth(.8f)) {
-            Text(
-                "Project: ${timeEntry.projectName}: ${timeEntry.description}",
-                fontWeight = FontWeight.Bold,
-                modifier = padding
-            )
+            Row {
+                Column {
+                    Text(
+                        "Project:",
+                        fontWeight = FontWeight.Bold,
+                        modifier = padding
+                    )
+                    TextField(value = projectNameText, onValueChange = { setProjectNameText(it) })
+                }
+                Column {
+                    Text(
+                        "Description:",
+                        fontWeight = FontWeight.Bold,
+                        modifier = padding
+                    )
+                    TextField(value = descriptionText, onValueChange = { setDescriptionText(it) })
+                }
+            }
             Box(modifier = Modifier.padding(top = 4.dp)) {
                 Text(
                     text = "Start: ${timeEntry.start.asFormattedString()} End: ${timeEntry.end.asFormattedString()}",
@@ -171,7 +186,6 @@ private fun TimeEntryItem(
                 }
             )
         }
-
     }
     Row(modifier = Modifier.padding(top = 5.dp)) {
         Button(onClick = {
@@ -182,7 +196,8 @@ private fun TimeEntryItem(
             val seconds = parts[2].toLong()
             val timeInSeconds = seconds + (minutes * 60) + (hours * 60 * 60)
             setDurationText(timeInSeconds.secondsToFormattedString())
-            TrackingDataService.updateTimeEntry(timeEntry, Duration.ofSeconds(timeInSeconds))
+            val updatedEntry = timeEntry.copy(projectName = projectNameText, description = descriptionText)
+            TrackingDataService.updateTimeEntry(updatedEntry, Duration.ofSeconds(timeInSeconds))
             setTimeEntries(getAllProjectsFor(currentWorkingDay))
         }) {
             Text("Update")
