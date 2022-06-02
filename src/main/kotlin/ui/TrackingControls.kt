@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import project.Day
 import time.TimeEntry
 import time.Timer
-import time.getProjectNamesStartingWith
 import tracker.TrackingDataService
 import ui.components.SpacedElements
 import ui.components.SpacedTextField

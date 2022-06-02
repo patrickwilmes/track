@@ -3,6 +3,7 @@ package tracker
 import project.Day
 import settings.Settings
 import settings.getSettings
+import settings.saveSettings
 import time.TimeEntry
 import java.time.Duration
 import java.time.LocalDate
@@ -56,7 +57,7 @@ internal interface DataService {
 
 internal object LocalDataService : DataService {
     override fun updateSettings(newSettings: Settings) {
-        settings.saveSettings(newSettings)
+        saveSettings(newSettings)
     }
 
     override fun getAllProjectsFor(dayInWorkingWeek: LocalDate): List<Day> {

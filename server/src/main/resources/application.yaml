@@ -1,4 +1,0 @@
-database:
-  host: localhost:5432
-  user: postgres
-  pass: test

@@ -2,6 +2,10 @@ package settings
 
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import settings.SettingsTable.hoursPerWeek
+import settings.SettingsTable.remoteServerAddress
+import settings.SettingsTable.storeDataRemote
+import settings.SettingsTable.trackTimeOnWeekend
 
 object SettingsTable : Table(name = "settings") {
     val id = integer("id").autoIncrement()
@@ -42,8 +46,8 @@ fun getSettings() = transaction {
 }
 
 private fun ResultRow.toSettings() = Settings(
-    trackTimeOnWeekend = this[SettingsTable.trackTimeOnWeekend],
-    hoursPerWeek = if (this[SettingsTable.hoursPerWeek] == 0) 40 else this[SettingsTable.hoursPerWeek],
-    storeDataRemote = this[SettingsTable.storeDataRemote],
-    remoteServerAddress = this[SettingsTable.remoteServerAddress],
+    trackTimeOnWeekend = this[trackTimeOnWeekend],
+    hoursPerWeek = if (this[hoursPerWeek] == 0) 40 else this[hoursPerWeek],
+    storeDataRemote = this[storeDataRemote],
+    remoteServerAddress = this[remoteServerAddress],
 )
