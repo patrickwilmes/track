@@ -41,8 +41,8 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
         val week = getWeekForDate(workingDay)
         val onClick = { e: Direction ->
             val date = when (e) {
-                Direction.Left -> getMondayOfPreviousWeek(week.getStartDay())
-                Direction.Right -> getMondayOfNextWeek(week.getStartDay())
+                Direction.Left -> getFirstDayOfPreviousWeek(week.getFirstDayOfTheWeek())
+                Direction.Right -> getFirstDayOfNextWeek(week.getFirstDayOfTheWeek())
             }
             setWorkingDay(date)
             setTimeEntries(TrackingDataService.getAllProjectsFor(date))
@@ -55,13 +55,13 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
             })
 
         // todo - this should be centered
-        val textModifier = if (LocalDate.now().isBefore(week.getEndDay()) && LocalDate.now().isAfter(week.getStartDay()))
+        val textModifier = if (LocalDate.now().isBefore(week.getLastDayOfTheWeek()) && LocalDate.now().isAfter(week.getFirstDayOfTheWeek()))
             Modifier.padding(start = 5.dp, end = 5.dp).background(color = Color(0xFFA8C0CE)).fillMaxWidth(0.9f)
         else
             Modifier.padding(start = 5.dp, end = 5.dp).fillMaxWidth(0.9f)
         Text(
-            "${week.getStartDay().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))} - ${
-                week.getEndDay().format(
+            "${week.getFirstDayOfTheWeek().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))} - ${
+                week.getLastDayOfTheWeek().format(
                     DateTimeFormatter.ofPattern("dd.MM.yyyy")
                 )
             }",

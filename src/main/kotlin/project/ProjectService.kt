@@ -8,6 +8,6 @@ fun getAllProjectsFor(dayInWorkingWeek: LocalDate): List<Day> =
         .groupBy { it.day }
         .map { (day, entries) ->
             val byProjectName = entries.groupBy { it.projectName }
-            val projects = byProjectName.map { (projectName, entires) -> Project(projectName, entires.toSet()) }
+            val projects = byProjectName.map { (projectName, entries) -> Project(projectName, entries.toSet()) }
             Day(day!!, projects)
         }
