@@ -7,3 +7,4 @@ pluginManagement {
     
 }
 rootProject.name = "track"
+include(":track-server")
