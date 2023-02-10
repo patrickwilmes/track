@@ -20,9 +20,10 @@ import androidx.compose.ui.window.WindowSize
 import androidx.compose.ui.window.rememberDialogState
 import settings.getSettings
 import settings.saveSettings
+import java.time.Duration
 
 @Composable
-fun SettingsDialog(setSettingsDialogVisible: (Boolean) -> Unit) {
+fun settingsDialog(setSettingsDialogVisible: (Boolean) -> Unit) {
     Dialog(
         onCloseRequest = { setSettingsDialogVisible(false) },
         title = "Settings",
@@ -55,7 +56,7 @@ fun SettingsDialog(setSettingsDialogVisible: (Boolean) -> Unit) {
                                 singleLine = true,
                                 onValueChange = {
                                     settings.value =
-                                        settings.value.copy(hoursPerWeek = it.toInt()) // todo - make all that parsing in some kind of view model
+                                        settings.value.copy(hoursPerWeek = Duration.ofHours(it.toLong())) // todo - make all that parsing in some kind of view model
                                     setDirty()
                                 })
                         }

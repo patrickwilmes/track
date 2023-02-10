@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import project.Day
+import settings.getSettings
 import time.Timer
 import tracker.TrackingDataService
 import ui.components.Separator
@@ -28,11 +30,17 @@ import java.time.LocalDate
 
 
 @Composable
-fun App() {
+fun app() {
     DesktopMaterialTheme {
         val timer = remember { Timer() }
         val (time, setTime) = remember { mutableStateOf(Duration.ofMillis(0)) }
-        val (projects, setProjects) = remember { mutableStateOf(TrackingDataService.getAllProjectsFor(LocalDate.now())) }
+        val (projects, setProjects) = remember {
+            mutableStateOf(
+                TrackingDataService.getAllProjectsFor(
+                    LocalDate.now()
+                )
+            )
+        }
         val (settingsDialogVisible, setSettingsDialogVisible) = remember { mutableStateOf(false) }
 
         Column(modifier = Modifier.background(color = Color(0xFFF0F0EB))) {
@@ -49,10 +57,13 @@ fun App() {
 
                 )
                 if (settingsDialogVisible) {
-                    SettingsDialog(setSettingsDialogVisible)
+                    settingsDialog(setSettingsDialogVisible)
                 }
             }
-            TimeTrackingBox(timer, time.seconds, setProjects, setTime)
+            Separator()
+            workweekMetaInformation(projects)
+            Separator()
+            timeTrackingBox(timer, time.seconds, setProjects, setTime)
             Separator()
             TimeEntryList(projects, setProjects)
             LaunchedEffect(Unit) {
@@ -68,7 +79,35 @@ fun App() {
 }
 
 @Composable
-private fun TimeTrackingBox(
+fun workweekMetaInformation(
+    days: List<Day>,
+) {
+    val settings = remember { getSettings() }
+    val totalSecondsWorked = days.sumOf { it.project.sumOf { it.totalDurationSeconds } }
+    Row(modifier = Modifier.padding(10.dp)) {
+        Column {
+            Box(modifier = Modifier.padding(start = 10.dp, top = 8.dp)) {
+                Row {
+                    Column {
+                        Text("Remaining hours to work this week: ", fontWeight = FontWeight.Bold)
+                    }
+                    Column {
+                        val remaining = settings.hoursPerWeek.minus(Duration.ofSeconds(totalSecondsWorked))
+                        with (remaining) {
+                            val hours = toHours()
+                            val minutes = toMinutesPart().toString().padStart(length = 2, padChar = '0')
+                            val seconds = toSecondsPart().toString().padStart(length = 2, padChar = '0')
+                            Text("$hours:$minutes:$seconds")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun timeTrackingBox(
     timer: Timer,
     timeInSeconds: Long,
     setTimeEntries: (List<Day>) -> Unit,

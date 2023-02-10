@@ -9,7 +9,7 @@ import androidx.compose.ui.window.*
 import db.AppMode
 import db.Mode
 import db.setupDatabase
-import ui.App
+import ui.app
 
 fun main(args: Array<String>) = application {
     if (args.any { it == "dev" })
@@ -22,6 +22,6 @@ fun main(args: Array<String>) = application {
         icon = painterResource("track-icon.ico"),
         title = "Track",
     ) {
-        App()
+        app()
     }
 }
