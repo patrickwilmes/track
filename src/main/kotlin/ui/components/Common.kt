@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.em
 import time.secondsToFormattedString
 
 @Composable
-fun TimeLabel(givenSeconds: Long, fontWeight: FontWeight = FontWeight.Normal, fontSize: Int = 1, modifier: Modifier = Modifier.defaultMinSize()) {
+fun timeLabel(givenSeconds: Long, fontWeight: FontWeight = FontWeight.Normal, fontSize: Int = 1, modifier: Modifier = Modifier.defaultMinSize()) {
     Text(
         givenSeconds.secondsToFormattedString(),
         fontWeight = fontWeight,

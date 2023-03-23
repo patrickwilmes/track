@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Separator() {
+fun separator() {
     Row {
         Box(
             modifier = Modifier.fillMaxWidth().height(2.dp)

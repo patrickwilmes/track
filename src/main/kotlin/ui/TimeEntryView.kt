@@ -27,7 +27,7 @@ import project.Project
 import project.getAllProjectsFor
 import time.*
 import tracker.TrackingDataService
-import ui.components.Separator
+import ui.components.separator
 import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -37,7 +37,7 @@ private enum class Direction {
 }
 
 @Composable
-fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
+fun timeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
     val stateVertical = rememberScrollState(0)
     val (workingDay, setWorkingDay) = remember { mutableStateOf(LocalDate.now()) }
     Row(
@@ -86,7 +86,7 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
         ) {
             timeEntries
                 .forEach {
-                    DayBar(it, setTimeEntries, currentWorkingDay = workingDay)
+                    dayBar(it, setTimeEntries, currentWorkingDay = workingDay)
                 }
         }
         VerticalScrollbar(
@@ -97,7 +97,7 @@ fun TimeEntryList(timeEntries: List<Day>, setTimeEntries: (List<Day>) -> Unit) {
 }
 
 @Composable
-fun DayBar(
+fun dayBar(
     day: Day,
     setTimeEntries: (List<Day>) -> Unit,
     currentWorkingDay: LocalDate
@@ -114,7 +114,7 @@ fun DayBar(
             Column {
                 day.project
                     .forEach { entries ->
-                        ProjectBar(entries, setTimeEntries, currentWorkingDay)
+                        projectBar(entries, setTimeEntries, currentWorkingDay)
                     }
             }
         }
@@ -122,7 +122,7 @@ fun DayBar(
 }
 
 @Composable
-private fun ProjectBar(
+private fun projectBar(
     project: Project,
     setTimeEntries: (List<Day>) -> Unit,
     currentWorkingDay: LocalDate
@@ -138,7 +138,7 @@ private fun ProjectBar(
         if (isContentVisible) {
             Column {
                 project.timeEntries.forEach {
-                    TimeEntryItem(it, setTimeEntries, currentWorkingDay)
+                    timeEntryItem(it, setTimeEntries, currentWorkingDay)
                 }
             }
         }
@@ -147,7 +147,7 @@ private fun ProjectBar(
 
 
 @Composable
-private fun TimeEntryItem(
+private fun timeEntryItem(
     timeEntry: TimeEntry,
     setTimeEntries: (List<Day>) -> Unit,
     currentWorkingDay: LocalDate
@@ -218,6 +218,6 @@ private fun TimeEntryItem(
         }
     }
     Row(modifier = Modifier.padding(top = 4.dp)) {
-        Separator()
+        separator()
     }
 }

@@ -41,9 +41,9 @@ fun updateTimeEntry(timeEntry: TimeEntry, newDuration: Duration) {
     val newTimeEntry = timeEntry.copy(end = newEndTime)
     transaction {
         TimeEntryTable.update({ TimeEntryTable.id eq newTimeEntry.id!! }) {
-            it[TimeEntryTable.projectName] = newTimeEntry.projectName
-            it[TimeEntryTable.description] = newTimeEntry.description
-            it[TimeEntryTable.end] = newTimeEntry.end
+            it[projectName] = newTimeEntry.projectName
+            it[description] = newTimeEntry.description
+            it[end] = newTimeEntry.end
         }
     }
 }
@@ -68,11 +68,11 @@ fun saveTimeEntry(timeEntry: TimeEntry, doRound: Boolean = false) {
     } else timeEntry
     transaction {
         TimeEntryTable.insert {
-            it[TimeEntryTable.projectName] = entryToSave.projectName
-            it[TimeEntryTable.description] = entryToSave.description
-            it[TimeEntryTable.start] = entryToSave.start
-            it[TimeEntryTable.end] = entryToSave.end
-            it[TimeEntryTable.day] = LocalDate.now().atStartOfDay()
+            it[projectName] = entryToSave.projectName
+            it[description] = entryToSave.description
+            it[start] = entryToSave.start
+            it[end] = entryToSave.end
+            it[day] = LocalDate.now().atStartOfDay()
         }
     }
 }

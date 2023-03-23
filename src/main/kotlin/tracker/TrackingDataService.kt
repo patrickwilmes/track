@@ -19,11 +19,6 @@ object TrackingDataService {
     // todo - after this is initially set it will not change during runtime this might be useful but also will require a full sync
     private val dataService = getDataServiceForSettings(settings)
 
-    fun updateSettings(newSettings: Settings) {
-        settings = newSettings
-        dataService.updateSettings(newSettings)
-    }
-
     fun getAllProjectsFor(dayInWorkingWeek: LocalDate): List<Day> {
         return dataService.getAllProjectsFor(dayInWorkingWeek)
     }

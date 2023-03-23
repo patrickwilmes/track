@@ -23,14 +23,14 @@ import project.Day
 import time.TimeEntry
 import time.Timer
 import tracker.TrackingDataService
-import ui.components.SpacedElements
-import ui.components.SpacedTextField
+import ui.components.spacedElements
+import ui.components.spacedTextField
 import java.time.Duration
 import java.time.LocalDate
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TimeTrackingControls(
+fun timeTrackingControls(
     timer: Timer,
     setTimeEntries: (List<Day>) -> Unit,
     setTime: (Duration) -> Unit
@@ -45,14 +45,14 @@ fun TimeTrackingControls(
     Column {
         Row {
             Column {
-                SpacedTextField(
+                spacedTextField(
                     value = description,
                     label = "Description",
                     maxWidth = 450,
                     isReadonly = textFieldsReadonly,
                     setValue = setDescription
                 )
-                SpacedTextField(
+                spacedTextField(
                     value = projectName,
                     label = "Project Name",
                     maxWidth = 450,
@@ -105,7 +105,7 @@ fun TimeTrackingControls(
             }
         }
         Row {
-            SpacedElements(450) {
+            spacedElements(450) {
                 Box(modifier = Modifier.padding(end = 50.dp)) {
                     Button(
                         onClick = {

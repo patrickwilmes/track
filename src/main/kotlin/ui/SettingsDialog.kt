@@ -14,9 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.WindowSize
 import androidx.compose.ui.window.rememberDialogState
 import settings.getSettings
 import settings.saveSettings
@@ -27,7 +27,7 @@ fun settingsDialog(setSettingsDialogVisible: (Boolean) -> Unit) {
     Dialog(
         onCloseRequest = { setSettingsDialogVisible(false) },
         title = "Settings",
-        state = rememberDialogState(size = WindowSize(width = 400.dp, height = 400.dp))
+        state = rememberDialogState(size = DpSize(width = 400.dp, height = 400.dp))
     ) {
         val settings = remember { mutableStateOf(getSettings()) }
         val dialogIsDirty = remember { mutableStateOf(false) }

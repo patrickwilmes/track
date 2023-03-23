@@ -5,11 +5,11 @@
  */
 package ui
 
-import androidx.compose.desktop.DesktopMaterialTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -23,15 +23,15 @@ import project.Day
 import settings.getSettings
 import time.Timer
 import tracker.TrackingDataService
-import ui.components.Separator
-import ui.components.TimeLabel
+import ui.components.separator
+import ui.components.timeLabel
 import java.time.Duration
 import java.time.LocalDate
 
 
 @Composable
 fun app() {
-    DesktopMaterialTheme {
+    MaterialTheme {
         val timer = remember { Timer() }
         val (time, setTime) = remember { mutableStateOf(Duration.ofMillis(0)) }
         val (projects, setProjects) = remember {
@@ -60,12 +60,12 @@ fun app() {
                     settingsDialog(setSettingsDialogVisible)
                 }
             }
-            Separator()
+            separator()
             workweekMetaInformation(projects)
-            Separator()
+            separator()
             timeTrackingBox(timer, time.seconds, setProjects, setTime)
-            Separator()
-            TimeEntryList(projects, setProjects)
+            separator()
+            timeEntryList(projects, setProjects)
             LaunchedEffect(Unit) {
                 while (true) {
                     withFrameMillis {
@@ -83,7 +83,8 @@ fun workweekMetaInformation(
     days: List<Day>,
 ) {
     val settings = remember { getSettings() }
-    val totalSecondsWorked = days.sumOf { it.project.sumOf { it.totalDurationSeconds } }
+    val totalSecondsWorked =
+        days.sumOf { it.project.sumOf { project -> project.totalDurationSeconds } }
     Row(modifier = Modifier.padding(10.dp)) {
         Column {
             Box(modifier = Modifier.padding(start = 10.dp, top = 8.dp)) {
@@ -114,10 +115,10 @@ private fun timeTrackingBox(
     setTime: (Duration) -> Unit
 ) {
     Row(modifier = Modifier.padding(10.dp)) {
-        TimeTrackingControls(timer, setTimeEntries, setTime)
+        timeTrackingControls(timer, setTimeEntries, setTime)
         Column {
             Box(modifier = Modifier.padding(start = 10.dp, top = 8.dp)) {
-                TimeLabel(
+                timeLabel(
                     timeInSeconds,
                     fontSize = 2,
                     fontWeight = FontWeight.Bold,

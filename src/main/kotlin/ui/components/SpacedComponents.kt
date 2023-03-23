@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 private val defaultSpacing = 2.dp
 
 @Composable
-fun SpacedTextField(
+fun spacedTextField(
     value: String,
     label: String,
     maxWidth: Int,
@@ -44,7 +44,7 @@ fun SpacedTextField(
 }
 
 @Composable
-fun SpacedElements(maxWidth: Int, children: @Composable () -> Unit) {
+fun spacedElements(maxWidth: Int, children: @Composable () -> Unit) {
     Box(modifier = Modifier.padding(defaultSpacing).width(maxWidth.dp)) {
         Row {
             children()

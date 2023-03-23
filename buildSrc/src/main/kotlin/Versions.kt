@@ -1,7 +1,7 @@
 object Versions {
-    val sqliteVersion = "3.36.0.2"
-    val flywayVersion = "8.2.0"
-    val flywayGradlePluginVersion = "8.2.0"
-    val androidxComposeVersion = "1.0.5"
-    val exposedVersion = "0.41.1"
+    const val sqliteVersion = "3.41.0.1"
+    const val flywayVersion = "9.8.1"
+    const val flywayGradlePluginVersion = "9.8.1"
+    const val androidxComposeVersion = "1.3.1"
+    const val exposedVersion = "0.41.1"
 }
